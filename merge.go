@@ -5,13 +5,13 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"go/ast"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"path/filepath"
 )
 
-func MergeCmd(args []string) (err os.Error) {
+func MergeCmd(args []string) (err error) {
 	if len(args) != 2 {
 		return MakeErr("Usage: gorf [flags] merge <old path> <new path>")
 	}

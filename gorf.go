@@ -11,7 +11,7 @@ import (
 	"os"
 	"fmt"
 	"flag"
-	"gonicetrace.googlecode.com/hg/nicetrace"
+	"code.google.com/p/gonicetrace/nicetrace"
 )
 
 var (
@@ -32,14 +32,14 @@ commands:
   undo
 `
 
-func MakeErr(format string, args ...interface{}) (os.Error) {
-	return os.NewError(fmt.Sprintf(format, args...))
+func MakeErr(format string, args ...interface{}) (error) {
+	return fmt.Errorf(format, args...)
 }
 
 func main() {
-	defer nicetrace.Print()
+	defer nicetrace.WriteStacktrace(os.Stderr)
 	
-	var err os.Error
+	var err error
 	
 
 	erf := func(format string, args ...interface{}) {
@@ -56,14 +56,14 @@ func main() {
 	
 	flag.Parse()
 	
-	norollCmds := map[string]func([]string) os.Error {
+	norollCmds := map[string]func([]string) error {
 		"undo" : UndoCmd,
 		"scan" : ScanCmd,
 		"changes" : ChangesCmd,
 		"clear" : ClearCmd,
 	}
 	
-	rollCmds := map[string]func([]string) os.Error {
+	rollCmds := map[string]func([]string) error {
 		
 		"pkg" : PkgCmd,
 		"rename" : RenameCmd,

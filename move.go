@@ -8,12 +8,13 @@ import (
 	"fmt"
 	"strings"
 	"os"
-	"go/ast"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"path/filepath"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	"code.google.com/p/rog-go/exp/go/types"
 )
 
-func MoveAllCmd(args []string) (err os.Error) {
+func MoveAllCmd(args []string) (err error) {
 	if len(args) != 2 {
 		return MakeErr("Usage: gorf [flags] moveall <old path> <new path>")
 	}
@@ -42,7 +43,7 @@ func MoveAllCmd(args []string) (err os.Error) {
 	return
 }
 
-func MoveCmd(args []string) (err os.Error) {
+func MoveCmd(args []string) (err error) {
 	if len(args) < 2 {
 		return MakeErr("Usage: gorf [flags] move <old path> <new path> [<name>+]")
 	}

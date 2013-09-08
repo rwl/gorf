@@ -7,12 +7,14 @@ package main
 import (
 	"os"
 	"fmt"
-	"go/token"
-	"go/ast"
+	//"go/token"
+	"code.google.com/p/rog-go/exp/go/token"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"path/filepath"
 	"strings"
-	"rog-go.googlecode.com/hg/exp/go/types"
-	"rog-go.googlecode.com/hg/exp/go/parser"
+	"code.google.com/p/rog-go/exp/go/types"
+	"code.google.com/p/rog-go/exp/go/parser"
 	//"go/parser"
 )
 
@@ -57,9 +59,9 @@ func LocalImporter(path string) (pkg *ast.Package) {
 	return
 }
 
-func ScanAllForImports(dir string) (err os.Error) {
+func ScanAllForImports(dir string) (err error) {
 	sw := ScanWalker{}
-	filepath.Walk(dir, &sw, nil)
+	filepath.Walk(dir, sw.Walk)
 	err = sw.err
 	
 	return
@@ -72,7 +74,16 @@ func PreloadImportedBy(path string) {
 }
 
 type ScanWalker struct {
-	err os.Error
+	err error
+}
+
+func (this *ScanWalker) Walk(path string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		this.VisitDir(path, &info)
+	} else {
+		this.VisitFile(path, &info)
+	}
+	return err
 }
 
 func (s *ScanWalker) VisitDir(path string, f *os.FileInfo) bool {
@@ -90,7 +101,7 @@ func (s *ScanWalker) VisitFile(fpath string, f *os.FileInfo) {
 }
 
 //Look at the imports, and build up ImportedBy
-func ScanForImports(path string) (err os.Error) {
+func ScanForImports(path string) (err error) {
 	sourcefiles, _ := filepath.Glob(filepath.Join(path, "*.go"))
 	dirpkgs, err := parser.ParseFiles(AllSourceTops, sourcefiles, parser.ImportsOnly)
 	

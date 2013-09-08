@@ -11,11 +11,12 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"errors"
 )
 
-func UndoCmd(args []string) (err os.Error) {
+func UndoCmd(args []string) (err error) {
 	if len(args) != 0 {
-		return os.NewError("Usage: gorf [flags] undo")
+		return errors.New("Usage: gorf [flags] undo")
 	}
 	
 	lastChangePath := filepath.Join(LocalRoot, ".change.0.gorfc")
@@ -31,16 +32,25 @@ func UndoCmd(args []string) (err os.Error) {
 	n, err = srcFile.Read(buf)
 	fmt.Printf("Undoing \"%s\"\n", strings.TrimSpace(string(buf[:n])))
 	
-	filepath.Walk(LocalRoot, undoscanner(0), nil)
+	filepath.Walk(LocalRoot, undoscanner(0).Walk)
 	
 	ur := UndoRoller{incr:-1}
-	filepath.Walk(LocalRoot, &ur, nil)
+	filepath.Walk(LocalRoot, ur.Walk)
 	return ur.err
 	
 	return
 }
 
 type undoscanner int
+
+func (this undoscanner) Walk(path string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		this.VisitDir(path, &info)
+	} else {
+		this.VisitFile(path, &info)
+	}
+	return err
+}
 
 func (this undoscanner) VisitDir(dpath string, f *os.FileInfo) bool {
 	return true
@@ -86,7 +96,7 @@ func (this undoscanner) VisitFile(fpath string, f *os.FileInfo) {
 	}
 }
 
-func ChangesCmd(args []string) (err os.Error) {
+func ChangesCmd(args []string) (err error) {
 	var i int
 	for i=0; ; i++ {
 		changePath := filepath.Join(LocalRoot, fmt.Sprintf(".change.%d.gorfc", i))
@@ -114,11 +124,20 @@ func ChangesCmd(args []string) (err os.Error) {
 	return
 }
 
-func ClearCmd(args []string) (err os.Error) {
-	filepath.Walk(LocalRoot, UndoRemover(0), nil)
+func ClearCmd(args []string) (err error) {
+	filepath.Walk(LocalRoot, UndoRemover(0).Walk)
 	return 
 }
 type UndoRemover int
+
+func (this UndoRemover) Walk(path string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		this.VisitDir(path, &info)
+	} else {
+		this.VisitFile(path, &info)
+	}
+	return err
+}
 
 func (this UndoRemover) VisitDir(dpath string, f *os.FileInfo) bool {
 	return true
@@ -135,15 +154,24 @@ func (this UndoRemover) VisitFile(fpath string, f *os.FileInfo) {
 	return
 }
 
-func RollbackUndos() (err os.Error) {
+func RollbackUndos() (err error) {
 	ur := UndoRoller{incr:1}
-	filepath.Walk(LocalRoot, &ur, nil)
+	filepath.Walk(LocalRoot, ur.Walk)
 	return ur.err
 }
 
 type UndoRoller struct {
 	incr int
-	err os.Error
+	err error
+}
+
+func (this *UndoRoller) Walk(path string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		this.VisitDir(path, &info)
+	} else {
+		this.VisitFile(path, &info)
+	}
+	return err
 }
 
 func (this *UndoRoller) VisitDir(dpath string, f *os.FileInfo) bool {

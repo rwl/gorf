@@ -9,11 +9,13 @@ import (
 	"io"
 	"path/filepath"
 	"os"
-	"go/ast"
-	"go/printer"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
+	//"go/printer"
+	"code.google.com/p/rog-go/exp/go/printer"
 )
 
-func Copy(srcpath, dstpath string) (err os.Error) {
+func Copy(srcpath, dstpath string) (err error) {
 	var srcFile *os.File
 	srcFile, err = os.Open(srcpath)
 	if err != nil {
@@ -39,7 +41,7 @@ func FileExists(fpath string) bool {
 	return err == nil
 }
 
-func BackupSource(fpath string) (err os.Error) {
+func BackupSource(fpath string) (err error) {
 	dir, name := filepath.Split(fpath)
 	backup := filepath.Join(dir, "."+name+".0.gorf")
 	if !FileExists(backup) {
@@ -48,13 +50,13 @@ func BackupSource(fpath string) (err os.Error) {
 	return
 }
 
-func Touch(fpath string) (err os.Error) {
+func Touch(fpath string) (err error) {
 	f, err := os.Create(fpath)
 	f.Close()
 	return
 }
 
-func MoveSource(oldpath, newpath string) (err os.Error) {
+func MoveSource(oldpath, newpath string) (err error) {
 	fmt.Printf("Moving %s to %s\n", oldpath, newpath)
 	
 	ndir, nfile := filepath.Split(newpath)
@@ -92,7 +94,7 @@ func MoveSource(oldpath, newpath string) (err os.Error) {
 	return
 }
 
-func NewSource(fpath string, file *ast.File) (err os.Error) {
+func NewSource(fpath string, file *ast.File) (err error) {
 	fmt.Printf("Creating %s\n", fpath)
 	
 	dir, name := filepath.Split(fpath)
@@ -113,7 +115,7 @@ func NewSource(fpath string, file *ast.File) (err os.Error) {
 	return
 }
 
-func RewriteSource(fpath string, file *ast.File) (err os.Error) {
+func RewriteSource(fpath string, file *ast.File) (err error) {
 	fmt.Printf("Rewriting %s\n", fpath)
 
 	err = BackupSource(fpath)

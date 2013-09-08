@@ -5,20 +5,20 @@
 package main
 
 import (
-	"os"
-	"go/ast"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"strings"
 	"path/filepath"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	"code.google.com/p/rog-go/exp/go/types"
 )	
 
-func RenameCmd(args []string) (err os.Error) {
+func RenameCmd(args []string) (err error) {
 	if len(args) != 3 {
 		return MakeErr("Usage: gorf [flags] rename <path> [<type>.]<old name> <new name>")
 	}
 	path, oldname, newname := filepath.Clean(args[0]), args[1], args[2]
 	
-	if oldnametoks := strings.Split(oldname, ".", 2); len(oldnametoks) == 2 {
+	if oldnametoks := strings.SplitN(oldname, ".", 2); len(oldnametoks) == 2 {
 		return FieldCmd([]string{path, oldnametoks[0], oldnametoks[1], newname})
 	}
 	
@@ -136,7 +136,7 @@ func (this *DeclFinder) Visit(node ast.Node) ast.Visitor {
 }
 
 
-func RenameInAll(path string, newname string, Obj *ast.Object) (err os.Error) {
+func RenameInAll(path string, newname string, Obj *ast.Object) (err error) {
 	for _, ip := range ImportedBy[QuotePath(path)] {
 		ipkg := LocalImporter(ip)
 		for fpath, file := range ipkg.Files {

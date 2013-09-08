@@ -5,13 +5,13 @@
 package main
 
 import (
-	"os"
-	"go/ast"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"fmt"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	"code.google.com/p/rog-go/exp/go/types"
 )
 
-func ScanCmd(args []string) (err os.Error) {
+func ScanCmd(args []string) (err error) {
 	ScanAllForImports(LocalRoot)
 	for _, path := range args {
 		pkg := LocalImporter(path)

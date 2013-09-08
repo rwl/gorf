@@ -5,12 +5,12 @@
 package main
 
 import (
-	"os"
-	"go/ast"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
+	"code.google.com/p/rog-go/exp/go/types"
 )
 
-func FieldCmd(args []string) (err os.Error) {
+func FieldCmd(args []string) (err error) {
 	if len(args) != 4 {
 		return MakeErr("Usage: gorf [flags] field <path> <type name> <old field name> <new field name>")
 	}

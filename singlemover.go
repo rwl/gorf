@@ -9,15 +9,18 @@ import (
 	"os"
 	"sort"
 	"unicode"
-	"utf8"
+	//"utf8"
 	"path/filepath"
-	"go/token"
-	"go/printer"
-	"go/ast"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	//"go/token"
+	"code.google.com/p/rog-go/exp/go/token"
+	//"go/printer"
+	"code.google.com/p/rog-go/exp/go/printer"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
+	"code.google.com/p/rog-go/exp/go/types"
 )
 
-func MoveSingle(oldpath, newpath string, names []string) (err os.Error) {
+func MoveSingle(oldpath, newpath string, names []string) (err error) {
 	for _, name := range names {
 		if !IsLegalIdentifier(name) {
 			return MakeErr("Name %s is not a legal identifier", name)
@@ -125,8 +128,8 @@ func (this *SingleMover) CollectUnexportedObjs() {
 	for node, obj := range this.moveNodes {
 		//printer.Fprint(os.Stdout, token.NewFileSet(), node)
 		//fmt.Printf("\n%v %T\n", obj, node)
-		
-		if !unicode.IsUpper(utf8.NewString(obj.Name).At(0)) {
+
+		if !unicode.IsUpper([]rune(obj.Name)[0]/*utf8.NewString(obj.Name).At(0)*/) {
 			this.unexportedObjs[obj] = true
 		}
 		
@@ -153,7 +156,7 @@ func (this NodeSorter) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func (this *SingleMover) CreateNewSource() (err os.Error) {
+func (this *SingleMover) CreateNewSource() (err error) {
 	
 	liw := make(ListImportWalker)
 	for n := range this.moveNodes {
@@ -228,7 +231,7 @@ func (this *SingleMover) CreateNewSource() (err os.Error) {
 			continue
 		}
 		
-		if !unicode.IsUpper(utf8.NewString(obj.Name).At(0)) {
+		if !unicode.IsUpper([]rune(obj.Name)[0]/*utf8.NewString(obj.Name).At(0)*/) {
 			position := AllSources.Position(expr.Pos())
 			fmt.Printf("At %v ", position)
 			printer.Fprint(os.Stdout, token.NewFileSet(), expr)
@@ -340,7 +343,7 @@ func (this CommentCollector) Visit(node ast.Node) ast.Visitor {
 	return this
 }
 
-func (this *SingleMover) RemoveUpdatePkg() (err os.Error) {
+func (this *SingleMover) RemoveUpdatePkg() (err error) {
 	for fpath, file := range this.pkg.Files {
 	
 		urw := ReferenceWalker {
@@ -500,7 +503,7 @@ func (this *SingleMover) RemoveUpdatePkg() (err os.Error) {
 	return
 }
 
-func (this *SingleMover) UpdateOther() (err os.Error) {
+func (this *SingleMover) UpdateOther() (err error) {
 	for _, path := range ImportedBy[QuotePath(this.oldpath)] {
 		opkg := LocalImporter(path)
 		

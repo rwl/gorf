@@ -6,13 +6,13 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"go/ast"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"path/filepath"
-	"rog-go.googlecode.com/hg/exp/go/types"
+	"code.google.com/p/rog-go/exp/go/types"
 )
 
-func PkgCmd(args []string) (err os.Error) {
+func PkgCmd(args []string) (err error) {
 	if len(args) != 2 {
 		return MakeErr("Usage: gorf [flags] pkg <path> <new name>")
 	}

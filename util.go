@@ -7,15 +7,17 @@ package main
 import (
 	"strings"
 	"unicode"
-	"utf8"
-	"go/ast"
+	//"utf8"
+	//"go/ast"
+	"code.google.com/p/rog-go/exp/go/ast"
 	"path/filepath"
 	"fmt"
 )
 
 func IsLegalIdentifier(s string) bool {
-	us := utf8.NewString(s)
-	if !unicode.IsLetter(us.At(0)) {
+	//us := utf8.NewString(s)
+	us := []rune(s)
+	if !unicode.IsLetter(us[0]/*us.At(0)*/) {
 		return false
 	}
 	for i, c := range s {
